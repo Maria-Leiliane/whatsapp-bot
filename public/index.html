@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RabbitMQ Test</title>
+</head>
+<body>
+  <h1>RabbitMQ Message Queue</h1>
+
+  <form id="messageForm">
+    <input type="text" id="messageInput" placeholder="Message">
+    <button type="submit">Send Message</button>
+  </form>
+
+  <h2>Received Messages</h2>
+  <div id="messages"></div>
+
+  <script>
+    document.getElementById('messageForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const message = document.getElementById('messageInput').value;
+
+      // Enviar mensagem para o servidor, que por sua vez envia para a API e RabbitMQ
+      await fetch('/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      document.getElementById('messageInput').value = '';
+    });
+
+    async function fetchMessages() {
+      const response = await fetch('/receive');
+      const message = await response.text();
+      document.getElementById('messages').innerHTML += `<p>${message}</p>`;
+    }
+
+    // Chamar fetchMessages periodicamente
+    setInterval(fetchMessages, 5000);
+  </script>
+</body>
+</html>
