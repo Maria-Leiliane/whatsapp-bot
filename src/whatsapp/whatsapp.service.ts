@@ -1,13 +1,12 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Client, Message } from 'whatsapp-web.js';
 import * as qrcode from 'qrcode-terminal';
-import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
 
 @Injectable()
 export class WhatsAppService implements OnModuleInit {
   private client: Client;
 
-  constructor(private readonly rabbitMQService: RabbitMQService) {
+  constructor() {
     this.client = new Client({
       puppeteer: {
         args: ['--no-sandbox', '--disable-setuid-sandbox'],

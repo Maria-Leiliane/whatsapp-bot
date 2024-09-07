@@ -1,23 +1,25 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './whatsapp/whatsapp.module';
+import { WhatsAppModule } from './whatsapp/whatsapp.module';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(WhatsAppModule);
 
-  // Configurar microservice RabbitMQ
+  // Configurar o microservice RabbitMQ
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
-      urls: ['amqp://localhost:5672'], // URL do RabbitMQ
-      queue: 'whats_queue', // Nome da fila
+      urls: ['amqp://localhost:5672'],
+      queue: 'whats_queue',
       queueOptions: {
         durable: false,
       },
     },
   });
 
-  await app.startAllMicroservices(); // Iniciar microservice RabbitMQ
-  await app.listen(3002); // Iniciar API
+  await app.startAllMicroservices();
+  await app.listen(3002);
+  console.log('API rodando na porta 3002');
 }
+
 bootstrap();

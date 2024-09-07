@@ -1,15 +1,12 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { WhatsAppService } from './whatsapp.service';
-import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
 
 @Controller('whatsapp')
 export class WhatsAppController {
-  constructor(
-    private readonly whatsappService: WhatsAppService,
-    private readonly rabbitMQService: RabbitMQService,
-  ) {}
+  constructor(private readonly whatsappService: WhatsAppService) {}
 
-  @Post('send-message')
+  // Rota para enviar mensagens via WhatsApp
+  @Post('send')
   async sendMessage(
     @Body('number') number: string,
     @Body('message') message: string,
@@ -18,11 +15,15 @@ export class WhatsAppController {
       return { error: 'Número e mensagem são obrigatórios!' };
     }
 
-    const messageBody = JSON.stringify({ number, message });
-
-    // Publicar a mensagem na fila do RabbitMQ
-    await this.rabbitMQService.sendToQueue('whatsapp_messages', messageBody);
-
-    return { status: 'Mensagem enviada para a fila!' };
+    try {
+      // Envia a mensagem para o cliente via WhatsApp
+      await this.whatsappService.sendMessage(number, message);
+      return { status: 'Mensagem enviada ao WhatsApp' };
+    } catch (error) {
+      return {
+        error: 'Erro ao enviar a mensagem',
+        details: error.message,
+      };
+    }
   }
 }
