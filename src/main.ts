@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { WhatsAppModule } from './whatsapp/whatsapp.module';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
+import { WhatsAppModule } from './whatsapp.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(WhatsAppModule);
